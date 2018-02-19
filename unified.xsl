@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- # Last commit $Id: unified.xsl 38544 2018-02-14 23:05:35Z jkay $ -->
+<!-- # Last commit $Id: unified.xsl 38596 2018-02-19 16:04:46Z jkay $ -->
 
 <!--                                                                           -->
 <!-- # Copyright (c) 2008-2018, Workbooks Online Limited. All Rights Reserved. -->
@@ -11,9 +11,6 @@
 
 <xslt:stylesheet xmlns:date="http://exslt.org/dates-and-times" xmlns:str="http://exslt.org/strings" xmlns:xslt="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xf="http://www.ecrion.com/xf/1.0" xmlns:xc="http://www.ecrion.com/2008/xc" xmlns:xfd="http://www.ecrion.com/xfd/1.0" xmlns:svg="http://www.w3.org/2000/svg" xmlns:msxsl="urn:schemas-microsoft-com:xslt" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" extension-element-prefixes="date str">
   <xslt:output indent="yes" encoding="utf-8"/>
-
-  <xsl:variable name="black" select="'rgb(0,0,0)'"/>
-  <xsl:variable name="white" select="'rgb(255,255,255)'"/>
 
   <xsl:variable name="address" select="/hash/address"/>
   <xsl:variable name="addressTextColour"> <xsl:call-template name="chooseColour"> <xsl:with-param name="colour" select="/hash/text/Address_Text_Colour"/> </xsl:call-template> </xsl:variable>
@@ -792,7 +789,7 @@
 
     <xsl:choose>
       <xsl:when test="$colour != &quot;&quot;"> <xsl:value-of select="$colour"/> </xsl:when>
-      <xsl:otherwise> <xsl:value-of select="$black"/> </xsl:otherwise>
+      <xsl:otherwise> <xsl:value-of select="'rgb(0,0,0)'"/> </xsl:otherwise>
     </xsl:choose>
   </xslt:template>
 
@@ -927,8 +924,8 @@
 
     <xslt:variable name="format">
       <xsl:choose>
-        <xsl:when test="/hash/text/Date_Format != &quot;&quot;">
-          <xsl:value-of select="/hash/text/Date_Format"/>
+        <xsl:when test="$dateFormat != &quot;&quot;">
+          <xsl:value-of select="$dateFormat"/>
         </xsl:when>
         <xsl:otherwise>
           "dd/MM/yyyy"
