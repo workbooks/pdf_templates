@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- # Last commit $Id: unified.xsl 38596 2018-02-19 16:04:46Z jkay $ -->
+<!-- # Last commit $Id: unified.xsl 38612 2018-02-20 17:16:46Z jkay $ -->
 
 <!--                                                                           -->
 <!-- # Copyright (c) 2008-2018, Workbooks Online Limited. All Rights Reserved. -->
@@ -88,7 +88,7 @@
   <xsl:variable name="registeredOfficeLabel" select="/hash/text/Registered_Office_Label"/>
   <xsl:variable name="shippingLabel" select="/hash/text/Shipping_Label"/>
   <xsl:variable name="signatureLabel" select="/hash/text/Signature_Label"/>
-  <xsl:variable name="someDiscountApplies" select="/hash/some_discount_applies != &quot;&quot;"/>
+  <xsl:variable name="someDiscountApplies" select="/hash/some_discount_applies != ''"/>
   <xsl:variable name="startDateLabel" select="/hash/text/Start_Date_Label"/>
   <xsl:variable name="subTotalLabel" select="/hash/text/Sub_Total_Label"/>
   <xsl:variable name="tableBorderColour"> <xsl:call-template name="chooseColour"> <xsl:with-param name="colour" select="/hash/text/Table_Border_Colour"/> </xsl:call-template> </xsl:variable>
@@ -109,13 +109,13 @@
   <xsl:variable name="websiteLabel" select="/hash/text/Website_Label"/>
   <xsl:variable name="yourPOLabel" select="/hash/text/Your_PO_Label"/>
   
-  <xsl:variable name="isLandscape" select="$pageOrientation = &quot;Landscape&quot;"/>
-  <xsl:variable name="isContract" select="$collectionClassName = &quot;Private::Accounting::Contract&quot;"/>
-  <xsl:variable name="isCreditNote" select="$collectionClassName = &quot;Private::Accounting::CreditNote&quot;"/>
-  <xsl:variable name="isInvoice" select="$collectionClassName = &quot;Private::Accounting::Invoice&quot;"/>
-  <xsl:variable name="isPurchaseOrder" select="$collectionClassName = &quot;Private::Accounting::PurchaseOrder&quot;"/>
-  <xsl:variable name="isQuotation" select="$collectionClassName = &quot;Private::Accounting::Quotation&quot;"/>
-  <xsl:variable name="isSalesOrder" select="$collectionClassName = &quot;Private::Accounting::SalesOrder&quot;"/>
+  <xsl:variable name="isLandscape" select="$pageOrientation = 'Landscape'"/>
+  <xsl:variable name="isContract" select="$collectionClassName = 'Private::Accounting::Contract'"/>
+  <xsl:variable name="isCreditNote" select="$collectionClassName = 'Private::Accounting::CreditNote'"/>
+  <xsl:variable name="isInvoice" select="$collectionClassName = 'Private::Accounting::Invoice'"/>
+  <xsl:variable name="isPurchaseOrder" select="$collectionClassName = 'Private::Accounting::PurchaseOrder'"/>
+  <xsl:variable name="isQuotation" select="$collectionClassName = 'Private::Accounting::Quotation'"/>
+  <xsl:variable name="isSalesOrder" select="$collectionClassName = 'Private::Accounting::SalesOrder'"/>
   
   <xsl:template match="/">
     <fo:root>
@@ -168,7 +168,7 @@
                         <fo:table-row>
                           <fo:table-cell number-columns-spanned="2">
                             <fo:block> <fo:inline> <xsl:value-of select="$ownOrganisationName"/> </fo:inline> </fo:block>
-                            <xsl:if test="$ownOrganisationMainAddress != &quot;&quot;">
+                            <xsl:if test="$ownOrganisationMainAddress != ''">
                               <fo:block linefeed-treatment="preserve"> <fo:inline> <xsl:value-of select="$ownOrganisationMainAddress"/> </fo:inline> </fo:block>
                             </xsl:if>
                           </fo:table-cell>
@@ -232,10 +232,10 @@
             </xsl:call-template>
 
             <fo:block text-align="right">
-              <xsl:if test="$pageNumberLabel != &quot;&quot;">
+              <xsl:if test="$pageNumberLabel != ''">
                 <fo:inline> <xsl:value-of select="$pageNumberLabel"/> &#160; <fo:page-number/> </fo:inline>
               </xsl:if>
-              <xsl:if test="$pageCountLabel != &quot;&quot;">
+              <xsl:if test="$pageCountLabel != ''">
                 <fo:inline> &#160; <xsl:value-of select="$pageCountLabel"/> &#160; <fo:page-number-citation ref-id="pageNumberCitation1"/> </fo:inline>
               </xsl:if>
             </fo:block>
@@ -263,7 +263,7 @@
           <fo:block text-align="center" font-size="14pt" font-weight="bold" display-align="center" padding-bottom="0.45cm" color="{$headerTextColour}">
             <fo:inline>
               <xsl:choose>
-                <xsl:when test="$title != &quot;&quot;"> <xsl:value-of select="$title"/> </xsl:when>
+                <xsl:when test="$title != ''"> <xsl:value-of select="$title"/> </xsl:when>
                 <xsl:otherwise> <xsl:value-of select="$collectionName"/> </xsl:otherwise>
               </xsl:choose>
             </fo:inline>
@@ -334,7 +334,7 @@
           
           <!-- === THE (ONE-LINE) DESCRIPTION === -->
           <fo:block space-before.optimum="35pt" space-after.optimum="15pt">
-            <xsl:if test="$description != &quot;&quot;">
+            <xsl:if test="$description != ''">
               <fo:block padding-top="0.45cm" font-size="9pt" font-weight="bold" color="{$headerTextColour}">
                 <fo:inline> <xsl:value-of select="$description"/> </fo:inline>
               </fo:block>
@@ -484,7 +484,7 @@
 
                     <xsl:if test="not($isContract)">
                       <xsl:call-template name="tableBodyCell">
-                        <xsl:with-param name="value" select="substring-before(_preload_product_id, &quot; - &quot;)"/>
+                        <xsl:with-param name="value" select="substring-before(_preload_product_id, ' - ')"/>
                         <xsl:with-param name="textAlign" select="'left'"/>
                       </xsl:call-template>
                     </xsl:if>
@@ -524,18 +524,14 @@
                       <xsl:call-template name="tableBodyCell">
                         <xsl:with-param name="value">
                           <xsl:choose>
-                            <xsl:when test="$displayDiscountAs = &quot;Percentage&quot;"> <xsl:value-of select="discount_percent"/>% </xsl:when>
-                            <xsl:otherwise>
-                              <xsl:choose>
-                                <xsl:when test="(document_currency_unit_price_value/@amount - document_currency_unit_price_after_discount_value/@amount) &gt; 0">
-                                  <xsl:value-of select="$documentCurrencyCurrencySymbol"/>
-                                  <xsl:if test="(document_currency_unit_price_value/@amount - document_currency_unit_price_after_discount_value/@amount)">
-                                    <xsl:value-of select="format-number((document_currency_unit_price_value/@amount - document_currency_unit_price_after_discount_value/@amount), &quot;##,##0.00&quot;, &quot;id1352499&quot;)"/>
-                                  </xsl:if>
-                                </xsl:when>
-                                <xsl:otherwise> <xsl:value-of select="$documentCurrencyCurrencySymbol"/>0.00 </xsl:otherwise>
-                              </xsl:choose>
-                            </xsl:otherwise>
+                            <xsl:when test="$displayDiscountAs = 'Percentage'"> <xsl:value-of select="discount_percent"/>% </xsl:when>
+                            <xsl:when test="(document_currency_unit_price_value/@amount - document_currency_unit_price_after_discount_value/@amount) &gt; 0">
+                              <xsl:value-of select="$documentCurrencyCurrencySymbol"/>
+                              <xsl:if test="(document_currency_unit_price_value/@amount - document_currency_unit_price_after_discount_value/@amount)">
+                                <xsl:value-of select="format-number((document_currency_unit_price_value/@amount - document_currency_unit_price_after_discount_value/@amount), '##,##0.00', 'id1352499')"/>
+                              </xsl:if>
+                            </xsl:when>
+                            <xsl:otherwise> <xsl:value-of select="$documentCurrencyCurrencySymbol"/>0.00 </xsl:otherwise>
                           </xsl:choose>
                         </xsl:with-param>
                         <xsl:with-param name="textAlign" select="'right'"/>
@@ -573,7 +569,7 @@
 
                 <!-- == SUB-TOTAL, OMITTED IF THERE IS NO Sub_Total_Label == -->
 
-                <xsl:if test="not($isCreditNote) and $subTotalLabel != &quot;&quot; and $ownOrganisationVatNumber != &quot;&quot;">
+                <xsl:if test="not($isCreditNote) and $subTotalLabel != '' and $ownOrganisationVatNumber != ''">
                   <fo:table-row keep-with-next="always">
                     <fo:table-cell border-width="1pt" border-style="hidden" padding="2pt" text-align="left" border-right-style="solid" border-color="{$tableBorderColour}">
                       <fo:block text-align="right" font-weight="bold" color="{$headerTextColour}"> <xsl:value-of select="$subTotalLabel"/> </fo:block>
@@ -584,7 +580,7 @@
                         <fo:inline> <xsl:value-of select="$documentCurrencyCurrencySymbol"/> </fo:inline>
                         <fo:inline>
                           <xsl:if test="/hash/document_currency_discounted_net_value/@amount - sum(/hash/order_line_items/*/document_currency_unit_price_after_discount_value[contains(../_preload_product_id, 'SHIPPING')=true()]/@amount)">
-                            <xsl:value-of select="format-number(/hash/document_currency_discounted_net_value/@amount - sum(/hash/order_line_items/*/document_currency_unit_price_after_discount_value[contains(../_preload_product_id, 'SHIPPING')=true()]/@amount), &quot;#,###.00&quot;, &quot;id1334875&quot;)"/>
+                            <xsl:value-of select="format-number(/hash/document_currency_discounted_net_value/@amount - sum(/hash/order_line_items/*/document_currency_unit_price_after_discount_value[contains(../_preload_product_id, 'SHIPPING')=true()]/@amount), '#,###.00')"/>
                           </xsl:if>
                         </fo:inline>
                       </fo:block>
@@ -594,7 +590,7 @@
 
                 <!-- == SHIPPING, OMITTED IF THERE IS NO Shipping_Label == -->
                 
-                <xsl:if test="$shippingLabel != &quot;&quot;">
+                <xsl:if test="$shippingLabel != ''">
                   <xsl:for-each select="/hash/order_line_items/order_line_item[contains(./_preload_product_id, 'SHIPPING')=true()]">
                     <fo:table-row keep-with-next="always">
                       <fo:table-cell border-width="1pt" border-style="hidden" padding="2pt" text-align="left" border-right-style="solid" border-color="{$tableBorderColour}">
@@ -608,7 +604,7 @@
                               <xsl:when test="sum(/hash/order_line_items/*/document_currency_unit_price_after_discount_value[contains(../_preload_product_id, 'SHIPPING')=true()]/@amount) &gt; 0">
                                 <xsl:value-of select="$documentCurrencyCurrencySymbol"/>
                                 <xsl:if test="sum(/hash/order_line_items/*/document_currency_unit_price_after_discount_value[contains(../_preload_product_id, 'SHIPPING')=true()]/@amount)">
-                                  <xsl:value-of select="format-number(sum(/hash/order_line_items/*/document_currency_unit_price_after_discount_value[contains(../_preload_product_id, 'SHIPPING')=true()]/@amount), &quot;##,##0.00&quot;, &quot;id1406054&quot;)"/>
+                                  <xsl:value-of select="format-number(sum(/hash/order_line_items/*/document_currency_unit_price_after_discount_value[contains(../_preload_product_id, 'SHIPPING')=true()]/@amount), '##,##0.00')"/>
                                 </xsl:if>
                               </xsl:when>
                               <xsl:otherwise> <xsl:value-of select="$documentCurrencyCurrencySymbol"/>0.00 </xsl:otherwise>
@@ -622,7 +618,7 @@
                 
                 <!-- == SALES TAX, OMITTED IF THERE IS NO VAT_Label OR NO SALES TAX == -->
                 
-                <xsl:if test="$vatLabel != &quot;&quot; and $ownOrganisationVatNumber != &quot;&quot;">
+                <xsl:if test="$vatLabel != '' and $ownOrganisationVatNumber != ''">
                   <xsl:for-each select="/hash/document_currency_sales_tax_value[@amount &gt; 0]">
                     <fo:table-row keep-with-next="always">
                       <fo:table-cell border-width="1pt" border-style="hidden" padding="2pt" text-align="left" border-right-style="solid" border-color="{$tableBorderColour}">
@@ -647,7 +643,7 @@
                     <fo:block text-align="right" font-size="8pt">
                       <fo:inline>
                         <xsl:choose>
-                          <xsl:when test="$ownOrganisationVatNumber != &quot;&quot;"> <xsl:value-of select="$documentCurrencyGrossValue"/> </xsl:when>
+                          <xsl:when test="$ownOrganisationVatNumber != ''"> <xsl:value-of select="$documentCurrencyGrossValue"/> </xsl:when>
                           <xsl:otherwise> <xsl:value-of select="$documentCurrencyNetValue"/> </xsl:otherwise>
                         </xsl:choose>
                       </fo:inline>
@@ -661,7 +657,7 @@
           
           <!-- === NOTES (COMMENTS ETC.) === -->
 
-          <xsl:if test="$commentLabel != &quot;&quot; and $comment != &quot;&quot;">
+          <xsl:if test="$commentLabel != '' and $comment != ''">
             <fo:block padding-bottom="0.225cm" font-size="9pt">
               <fo:table table-layout="fixed" width="100%" border-collapse="collapse">
                 <fo:table-column column-width="20.000%" column-number="1"/>
@@ -680,80 +676,62 @@
             </fo:block>
           </xsl:if>
 
-          <xsl:if test="$deliveryDetailsLabel != &quot;&quot; and $deliveryDetails != &quot;&quot;">
-            <xsl:call-template name="labelValueTable">
-              <xsl:with-param name="label" select="$deliveryDetailsLabel"/>
-              <xsl:with-param name="value" select="$deliveryDetails"/>
-            </xsl:call-template>
-          </xsl:if>
+          <xsl:call-template name="labelValueTableIfLabelAndValue">
+            <xsl:with-param name="label" select="$deliveryDetailsLabel"/>
+            <xsl:with-param name="value" select="$deliveryDetails"/>
+          </xsl:call-template>
 
-          <xsl:if test="$paymentDueDateLabel != &quot;&quot; and $isInvoice">
-            <xsl:call-template name="labelValueTable">
+          <xsl:if test="$isInvoice">
+            <xsl:call-template name="labelValueTableIfLabelAndValue">
               <xsl:with-param name="label" select="$paymentDueDateLabel"/>
               <xsl:with-param name="value" select="$paymentDueDateUserFormatted"/>
             </xsl:call-template>
-          </xsl:if>
 
-          <xsl:if test="$bankNameAddressLabel != &quot;&quot; and $bankNameAddress != &quot;&quot; and $isInvoice">
-            <xsl:call-template name="labelValueTable">
+            <xsl:call-template name="labelValueTableIfLabelAndValue">
               <xsl:with-param name="label" select="$bankNameAddressLabel"/>
               <xsl:with-param name="value" select="$bankNameAddress"/>
             </xsl:call-template>
-          </xsl:if>
 
-          <xsl:if test="$bankAccountNameLabel != &quot;&quot; and $bankAccountName != &quot;&quot; and $isInvoice">
-            <xsl:call-template name="labelValueTable">
+            <xsl:call-template name="labelValueTableIfLabelAndValue">
               <xsl:with-param name="label" select="$bankAccountNameLabel"/>
               <xsl:with-param name="value" select="$bankAccountName"/>
             </xsl:call-template>
-          </xsl:if>
 
-          <xsl:if test="$bankAccountSortCodeLabel != &quot;&quot; and $bankAccountSortCode != &quot;&quot; and $isInvoice">
-            <xsl:call-template name="labelValueTable">
+            <xsl:call-template name="labelValueTableIfLabelAndValue">
               <xsl:with-param name="label" select="$bankAccountSortCodeLabel"/>
               <xsl:with-param name="value" select="$bankAccountSortCode"/>
             </xsl:call-template>
-          </xsl:if>
 
-          <xsl:if test="$bankAccountNumberLabel != &quot;&quot; and $bankAccountNumber != &quot;&quot; and $isInvoice">
-            <xsl:call-template name="labelValueTable">
+            <xsl:call-template name="labelValueTableIfLabelAndValue">
               <xsl:with-param name="label" select="$bankAccountNumberLabel"/>
               <xsl:with-param name="value" select="$bankAccountNumber"/>
             </xsl:call-template>
-          </xsl:if>
 
-          <xsl:if test="$bankAccountIBANLabel != &quot;&quot; and $bankAccountIBAN != &quot;&quot; and $isInvoice">
-            <xsl:call-template name="labelValueTable">
+            <xsl:call-template name="labelValueTableIfLabelAndValue">
               <xsl:with-param name="label" select="$bankAccountIBANLabel"/>
               <xsl:with-param name="value" select="$bankAccountIBAN"/>
             </xsl:call-template>
           </xsl:if>
 
-          <xsl:if test="$paymentTermsLabel != &quot;&quot; and $paymentTerms != &quot;&quot;">
-            <xsl:call-template name="labelValueTable">
-              <xsl:with-param name="label" select="$paymentTermsLabel"/>
-              <xsl:with-param name="value" select="$paymentTerms"/>
-            </xsl:call-template>
-          </xsl:if>
+          <xsl:call-template name="labelValueTableIfLabelAndValue">
+            <xsl:with-param name="label" select="$paymentTermsLabel"/>
+            <xsl:with-param name="value" select="$paymentTerms"/>
+          </xsl:call-template>
 
-          <xsl:if test="$termsConditionsLabel != &quot;&quot; and $termsConditions != &quot;&quot;">
-            <xsl:call-template name="labelValueTable">
-              <xsl:with-param name="label" select="$termsConditionsLabel"/>
-              <xsl:with-param name="value" select="$termsConditions"/>
-            </xsl:call-template>
-          </xsl:if>
+          <xsl:call-template name="labelValueTableIfLabelAndValue">
+            <xsl:with-param name="label" select="$termsConditionsLabel"/>
+            <xsl:with-param name="value" select="$termsConditions"/>
+          </xsl:call-template>
 
-          <xsl:if test="$orderDetailsLabel != &quot;&quot; and $orderDetails != &quot;&quot;">
-            <xsl:call-template name="labelValueTable">
-              <xsl:with-param name="label" select="$orderDetailsLabel"/>
-              <xsl:with-param name="value" select="$orderDetails"/>
-            </xsl:call-template>
-          </xsl:if>
+          <xsl:call-template name="labelValueTableIfLabelAndValue">
+            <xsl:with-param name="label" select="$orderDetailsLabel"/>
+            <xsl:with-param name="value" select="$orderDetails"/>
+          </xsl:call-template>
 
           <!-- === SIGNATURE BLOCK === -->
 
           <xsl:if test="$isQuotation or $isSalesOrder or $isContract">
-            <xsl:if test="$yourPOLabel != &quot;&quot; or $printNameLabel != &quot;&quot; or $positionLabel != &quot;&quot; or $signatureLabel != &quot;&quot; or $dateSignatureLabel != &quot;&quot;">
+            <xsl:if test="$yourPOLabel != '' or $printNameLabel != '' or $positionLabel != '' or $signatureLabel != '' or $dateSignatureLabel != ''">
               
               <fo:block space-before.optimum="40pt" space-after.optimum="0pt"> <fo:inline> &#160; </fo:inline> </fo:block>
            
@@ -788,7 +766,7 @@
     <xslt:param name="colour"/>
 
     <xsl:choose>
-      <xsl:when test="$colour != &quot;&quot;"> <xsl:value-of select="$colour"/> </xsl:when>
+      <xsl:when test="$colour != ''"> <xsl:value-of select="$colour"/> </xsl:when>
       <xsl:otherwise> <xsl:value-of select="'rgb(0,0,0)'"/> </xsl:otherwise>
     </xsl:choose>
   </xslt:template>
@@ -797,7 +775,7 @@
     <xslt:param name="label"/>
     <xslt:param name="value"/>
 
-    <xsl:if test="$label != &quot;&quot; and $value != &quot;&quot;">
+    <xsl:if test="$label != '' and $value != ''">
       <xsl:call-template name="labelDefaultValueTableRow">
         <xsl:with-param name="label" select="$label"/>
         <xsl:with-param name="defaultLabel" select=""/>
@@ -815,7 +793,7 @@
       <fo:table-cell>
         <fo:block font-weight="bold" color="{$headerTextColour}">
           <xsl:choose>
-            <xsl:when test="$label != &quot;&quot;"> <xsl:value-of select="$label"/> </xsl:when>
+            <xsl:when test="$label != ''"> <xsl:value-of select="$label"/> </xsl:when>
             <xsl:otherwise> <xsl:value-of select="$defaultLabel"/> </xsl:otherwise>
           </xsl:choose>
         </fo:block>
@@ -826,6 +804,30 @@
         </fo:block>
       </fo:table-cell>
     </fo:table-row>
+  </xslt:template>
+
+  <xslt:template name="labelValueTableIfLabelAndValue">
+    <xslt:param name="label"/>
+    <xslt:param name="value"/>
+    
+    <xsl:if test="$label != '' and $value != ''">
+      <xsl:call-template name="labelValueTable">
+        <xsl:with-param name="label" select="$label"/>
+        <xsl:with-param name="value" select="$value"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xslt:template>
+
+  <xslt:template name="labelValueTableIfLabel">
+    <xslt:param name="label"/>
+    <xslt:param name="value"/>
+    
+    <xsl:if test="$label != ''">
+      <xsl:call-template name="labelValueTable">
+        <xsl:with-param name="label" select="$label"/>
+        <xsl:with-param name="value" select="$value"/>
+      </xsl:call-template>
+    </xsl:if>
   </xslt:template>
   
   <xslt:template name="labelValueTable">
@@ -855,11 +857,11 @@
     <xslt:param name="defaultLabel"/>
     <xslt:param name="value"/>
 
-    <xsl:if test="$value != &quot;&quot;">
+    <xsl:if test="$value != ''">
       <fo:block text-align="center">
         <fo:inline>
           <xsl:choose>
-            <xsl:when test="$label != &quot;&quot;">
+            <xsl:when test="$label != ''">
               <xsl:value-of select="$label"/>
             </xsl:when>
             <xsl:otherwise>
@@ -884,7 +886,7 @@
       <fo:block font-weight="bold" color="{$tableHeaderTextColour}">
         <fo:inline>
           <xsl:choose>
-            <xsl:when test="$label != &quot;&quot;"> <xsl:value-of select="$label"/> </xsl:when>
+            <xsl:when test="$label != ''"> <xsl:value-of select="$label"/> </xsl:when>
             <xsl:otherwise> <xsl:value-of select="$defaultLabel"/> </xsl:otherwise>
           </xsl:choose>
         </fo:inline>
@@ -904,7 +906,7 @@
   <xslt:template name="signatureBlockTableRowIfLabel">
     <xslt:param name="label"/>
 
-    <xsl:if test="$label != &quot;&quot;">
+    <xsl:if test="$label != ''">
       <fo:table-row keep-with-next="always">
         <fo:table-cell border-width="1pt" border-style="solid" border-color="$tableBorderColour" padding="5pt" text-align="left" background-color="$tableHeaderColour">
           <fo:block font-weight="bold" color="$tableHeaderTextColour">
@@ -924,7 +926,7 @@
 
     <xslt:variable name="format">
       <xsl:choose>
-        <xsl:when test="$dateFormat != &quot;&quot;">
+        <xsl:when test="$dateFormat != ''">
           <xsl:value-of select="$dateFormat"/>
         </xsl:when>
         <xsl:otherwise>
@@ -934,10 +936,10 @@
     </xslt:variable>
 
     <xsl:choose>
-      <xsl:when test="$format = &quot;yyyy-MM-dd&quot;">
+      <xsl:when test="$format = 'yyyy-MM-dd'">
         <xsl:value-of select="$iso8601-date"/>
       </xsl:when>
-      <xsl:when test="$format = &quot;MM/dd/yyyy&quot;">
+      <xsl:when test="$format = 'MM/dd/yyyy'">
         <xsl:value-of select="substring($iso8601-date, 6, 2)"/>/<xsl:value-of select="substring($iso8601-date, 9, 2)"/>/<xsl:value-of select="substring($iso8601-date, 1, 4)"/>
       </xsl:when>
       <!-- Default to dd/MM/yyyy -->
